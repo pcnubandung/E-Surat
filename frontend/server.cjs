@@ -4,7 +4,6 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
-// Serve static files dari dist dengan MIME type yang benar
 app.use(express.static(path.join(__dirname, 'dist'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.js')) {
@@ -15,7 +14,6 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   }
 }))
 
-// SPA fallback — semua route ke index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
