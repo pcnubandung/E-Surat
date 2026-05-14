@@ -4,6 +4,8 @@ const fs = require('fs')
 const app = express()
 
 const PORT = process.env.PORT || 3000
+console.log('$PORT env:', process.env.PORT)
+console.log('Using PORT:', PORT)
 const distPath = '/app/dist'
 
 console.log('distPath:', distPath)
