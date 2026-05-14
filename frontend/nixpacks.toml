@@ -5,7 +5,7 @@ nixPkgs = ["nodejs_20"]
 cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = ["echo VITE_API_URL=$VITE_API_URL", "npm run build"]
 
 [start]
 cmd = "node server.cjs"
