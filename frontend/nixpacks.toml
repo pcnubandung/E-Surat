@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs_20", "nginx"]
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = ["npm install --legacy-peer-deps"]
@@ -8,4 +8,4 @@ cmds = ["npm install --legacy-peer-deps"]
 cmds = ["npm run build"]
 
 [start]
-cmd = "nginx -g 'daemon off;' -c /app/nginx.conf"
+cmd = "npx serve -s dist -l tcp://0.0.0.0:$PORT"
