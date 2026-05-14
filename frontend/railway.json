@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "node server.cjs",
+    "startCommand": "caddy run --config /assets/Caddyfile --adapter caddyfile",
     "restartPolicyType": "ON_FAILURE"
   }
 }
