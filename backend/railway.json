@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "npx prisma generate && npx prisma migrate deploy && node src/server.js",
+    "startCommand": "node scripts/migrate.js && node src/server.js",
     "restartPolicyType": "ON_FAILURE"
   }
 }
