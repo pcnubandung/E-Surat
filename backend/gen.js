@@ -1,0 +1,1 @@
+﻿const fs=require("fs"); const out=[]; const w=(s)=>out.push(s); w("const PDFDocument=require(\"pdfkit\");"); w("const path=require(\"path\");"); w("const fs2=require(\"fs\");"); w("const {generateQRCodeDataURL}=require(\"./qrcode\");"); fs.writeFileSync("src/utils/pdfGenerator.js",out.join("\n"),"utf8"); console.log("ok",out.length);

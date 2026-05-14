@@ -1,0 +1,17 @@
+const fs=require("fs");
+const L=[];const a=s=>L.push(s);
+a("const PDFDocument = require('pdfkit');");
+a("const path = require('path');");
+a("const fs2 = require('fs');");
+a("const { generateQRCodeDataURL } = require('./qrcode');");
+a("const FONTS_DIR=path.join(__dirname,'fonts');");
+a("const FONT_ARAB_R=path.join(FONTS_DIR,'TraditionalArabic.ttf');");
+a("const FONT_ARAB_B=path.join(FONTS_DIR,'TraditionalArabicBold.ttf');");
+a("const HAS_ARAB=fs2.existsSync(FONT_ARAB_R);");
+a("const F_REG='Helvetica',F_BOLD='Helvetica-Bold',F_ITAL='Helvetica-Oblique',F_BOLD_ITAL='Helvetica-BoldOblique';");
+a("const F_ARAB='ArabFont',F_ARAB_BOLD='ArabFontBold';");
+a("const ML=57,MR=57,MT=40,MB=50,PW=595.28,PH=841.89,CW=PW-ML-MR;");
+a("const FS_ISI=11,FS_ARAB=14,LINE_GAP=1.5;");
+a("const FS_KOP_TINGKAT=11,FS_KOP_NAMA=17,FS_KOP_DAERAH=12,FS_KOP_ALAMAT=9,FS_KOP_KONTAK=7.5;");
+a("const GREEN='#166534',LINK_COLOR='#1a56db',TAB_W=24;");
+fs.writeFileSync("src/utils/pdfGenerator.js",L.join("\n"),"utf8");console.log("ok",L.length);
