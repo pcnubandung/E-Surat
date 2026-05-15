@@ -187,7 +187,14 @@ const serveFile = async (req, res) => {
       if (!disposisi) return res.status(403).json({ success: false, message: 'Akses ditolak' });
     }
 
-    const fullPath = path.join(__dirname, '../..', surat.filePath);
+    const BASE_UPLOAD = process.env.UPLOAD_DIR
+      ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
+      : path.join(__dirname, '../../uploads');
+
+    const fullPath = surat.filePath.startsWith('/uploads')
+      ? path.join(BASE_UPLOAD, surat.filePath.replace('/uploads', ''))
+      : path.join(__dirname, '../..', surat.filePath);
+
     if (!fs.existsSync(fullPath)) {
       return res.status(404).json({ success: false, message: 'File tidak ditemukan di server' });
     }
