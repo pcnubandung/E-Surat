@@ -8,6 +8,9 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
+// Trust Railway reverse proxy
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
