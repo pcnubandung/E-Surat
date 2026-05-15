@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "caddy run --config /app/Caddyfile",
+    "startCommand": "echo '=== dist contents ===' && ls -la /app/dist && ls -la /app/dist/assets && caddy run --config /app/Caddyfile",
     "restartPolicyType": "ON_FAILURE"
   }
 }

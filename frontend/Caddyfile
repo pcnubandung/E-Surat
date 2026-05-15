@@ -2,12 +2,6 @@
 
 root * /app/dist
 
-# Aktifkan browse untuk debug — akan dihapus setelah fix
-handle /debug-files/* {
-	root * /app
-	file_server browse
-}
-
 file_server
 
 try_files {path} /index.html
