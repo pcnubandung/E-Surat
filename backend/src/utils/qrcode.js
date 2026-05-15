@@ -15,7 +15,10 @@ const ensureDir = (dir) => {
  * @returns {Promise<string>} - Path file QR Code
  */
 async function generateQRCode(token, suratId) {
-  const qrDir = path.join(__dirname, '../../uploads/qrcodes');
+  const BASE_UPLOAD = process.env.UPLOAD_DIR
+    ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
+    : path.join(__dirname, '../../uploads');
+  const qrDir = path.join(BASE_UPLOAD, 'qrcodes');
   ensureDir(qrDir);
   
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';

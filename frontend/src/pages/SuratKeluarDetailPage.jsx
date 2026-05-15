@@ -8,7 +8,7 @@ import {
   QrCodeIcon, ExclamationTriangleIcon, EyeIcon
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
-import { suratKeluarAPI } from '../services/api'
+import { suratKeluarAPI, getUploadUrl } from '../services/api'
 import useAuthStore from '../store/authStore'
 import { getStatusLabel, getStatusClass, formatDate, formatDateTime, downloadBlob } from '../utils/helpers'
 import { PageLoader } from '../components/ui/LoadingSpinner'
@@ -257,7 +257,7 @@ export default function SuratKeluarDetailPage() {
             <div className="card card-body text-center">
               <h2 className="section-title mb-3">Verifikasi QR Code</h2>
               <img
-                src={surat.qrCodePath}
+                src={getUploadUrl(surat.qrCodePath)}
                 alt="QR Code Verifikasi"
                 className="w-32 h-32 mx-auto rounded-lg border border-gray-100"
               />
