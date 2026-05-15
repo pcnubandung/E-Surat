@@ -2,13 +2,12 @@
 
 root * /app/dist
 
-file_server
-
-@notStatic {
-	not path /assets/* /logo-org.png /favicon.svg *.png *.jpg *.ico *.svg *.woff2 *.webmanifest
+# Aktifkan browse untuk debug — akan dihapus setelah fix
+handle /debug-files/* {
+	root * /app
+	file_server browse
 }
 
-header @notStatic Cache-Control "no-cache, no-store, must-revalidate"
-header /assets/* Cache-Control "public, max-age=31536000, immutable"
+file_server
 
 try_files {path} /index.html
