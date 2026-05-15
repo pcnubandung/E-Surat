@@ -699,8 +699,15 @@ function renderTable(doc, table, x, startY) {
 
 // ── KOP SURAT (dipakai di setiap halaman) ─────────────────────────────────────
 async function drawKopSurat(doc, organisasi, pageY) {
+  // Support Railway volume mount path
+  const BASE_UPLOAD = process.env.UPLOAD_DIR
+    ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
+    : path.join(__dirname, '../../uploads');
+
   const logoPath = organisasi.logoPath
-    ? path.join(__dirname, '../../', organisasi.logoPath)
+    ? (organisasi.logoPath.startsWith('/uploads')
+        ? path.join(BASE_UPLOAD, organisasi.logoPath.replace('/uploads', ''))
+        : path.join(__dirname, '../../', organisasi.logoPath))
     : null;
   const hasLogo = logoPath && fs2.existsSync(logoPath);
 
