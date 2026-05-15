@@ -42,6 +42,8 @@ if (process.env.NODE_ENV === 'development') {
 const uploadsDir = process.env.UPLOAD_DIR
   ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../', process.env.UPLOAD_DIR))
   : path.join(__dirname, '../uploads');
+console.log('📁 UPLOAD_DIR env:', process.env.UPLOAD_DIR);
+console.log('📁 Serving uploads from:', uploadsDir);
 app.use('/uploads', express.static(uploadsDir));
 
 // Routes
