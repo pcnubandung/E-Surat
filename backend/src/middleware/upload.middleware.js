@@ -2,17 +2,20 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Pastikan direktori uploads ada
+// Base upload directory — support Railway volume mount
+const BASE_UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
+  : path.join(__dirname, '../../uploads');
+
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 };
 
-// Storage untuk foto profil user
 const fotoProfilStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../../uploads/foto-profil');
+    const dir = path.join(BASE_UPLOAD_DIR, 'foto-profil');
     ensureDir(dir);
     cb(null, dir);
   },
@@ -22,10 +25,9 @@ const fotoProfilStorage = multer.diskStorage({
   }
 });
 
-// Storage untuk logo organisasi
 const logoStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../../uploads/logos');
+    const dir = path.join(BASE_UPLOAD_DIR, 'logos');
     ensureDir(dir);
     cb(null, dir);
   },
@@ -35,10 +37,9 @@ const logoStorage = multer.diskStorage({
   }
 });
 
-// Storage untuk lampiran surat masuk
 const suratMasukStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../../uploads/surat-masuk');
+    const dir = path.join(BASE_UPLOAD_DIR, 'surat-masuk');
     ensureDir(dir);
     cb(null, dir);
   },
@@ -49,7 +50,6 @@ const suratMasukStorage = multer.diskStorage({
   }
 });
 
-// Filter file gambar
 const imageFilter = (req, file, cb) => {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
   if (allowedTypes.includes(file.mimetype)) {
@@ -59,18 +59,12 @@ const imageFilter = (req, file, cb) => {
   }
 };
 
-// Filter file dokumen
 const documentFilter = (req, file, cb) => {
   const allowedTypes = [
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp',
-    'image/heic',
-    'image/heif',
+    'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif',
   ];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
@@ -79,22 +73,8 @@ const documentFilter = (req, file, cb) => {
   }
 };
 
-const uploadLogo = multer({
-  storage: logoStorage,
-  fileFilter: imageFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
-
-const uploadFotoProfil = multer({
-  storage: fotoProfilStorage,
-  fileFilter: imageFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
-
-const uploadSuratMasuk = multer({
-  storage: suratMasukStorage,
-  fileFilter: documentFilter,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
-});
+const uploadLogo = multer({ storage: logoStorage, fileFilter: imageFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+const uploadFotoProfil = multer({ storage: fotoProfilStorage, fileFilter: imageFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+const uploadSuratMasuk = multer({ storage: suratMasukStorage, fileFilter: documentFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 
 module.exports = { uploadLogo, uploadFotoProfil, uploadSuratMasuk };

@@ -38,8 +38,11 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Static files untuk uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Static files untuk uploads — support Railway volume mount
+const uploadsDir = process.env.UPLOAD_DIR
+  ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../', process.env.UPLOAD_DIR))
+  : path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadsDir));
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
