@@ -6,6 +6,14 @@ const api = axios.create({
   timeout: 30000,
 })
 
+// Helper untuk URL file upload — prefix dengan backend URL
+export const getUploadUrl = (path) => {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  const base = (import.meta.env.VITE_API_URL || '').replace('/api', '')
+  return `${base}${path}`
+}
+
 // Request interceptor - tambah token
 api.interceptors.request.use(
   (config) => {

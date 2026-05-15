@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { BuildingOfficeIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
-import { organisasiAPI } from '../services/api'
+import { organisasiAPI, getUploadUrl } from '../services/api'
 import { PageLoader } from '../components/ui/LoadingSpinner'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
 import { buatSingkatan } from '../utils/helpers'
@@ -78,7 +78,7 @@ export default function ProfilOrganisasiPage() {
 
   if (isLoading) return <PageLoader />
 
-  const currentLogo = logoPreview || profil?.logoPath
+  const currentLogo = logoPreview || (profil?.logoPath ? getUploadUrl(profil.logoPath) : null)
   // Preview singkatan nomor surat
   const singkatan = form.tingkatanOrg && form.namaOrg
     ? buatSingkatan(form.tingkatanOrg, form.namaOrg)

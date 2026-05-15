@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline'
 import useAuthStore from '../../store/authStore'
 import { useQuery } from '@tanstack/react-query'
-import { organisasiAPI } from '../../services/api'
+import { organisasiAPI, getUploadUrl } from '../../services/api'
 
 const navItems = [
   { to: '/dashboard', icon: HomeIcon, label: 'Dashboard', roles: ['ADMIN', 'SEKRETARIS', 'KETUA', 'PENGURUS'] },
@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onClose }) {
       <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
         <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
           {orgData?.logoPath ? (
-            <img src={orgData.logoPath} alt="Logo" className="w-full h-full object-contain" />
+            <img src={getUploadUrl(orgData.logoPath)} alt="Logo" className="w-full h-full object-contain" />
           ) : (
             <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-green">
               <span className="text-white font-bold text-lg">S</span>

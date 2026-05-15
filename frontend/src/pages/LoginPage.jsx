@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { authAPI, organisasiAPI } from '../services/api'
+import { authAPI, organisasiAPI, getUploadUrl } from '../services/api'
 import useAuthStore from '../store/authStore'
 
 export default function LoginPage() {
@@ -67,7 +67,7 @@ export default function LoginPage() {
               className="w-24 h-24 flex items-center justify-center mx-auto mb-4"
             >
               {orgData?.logoPath ? (
-                <img src={orgData.logoPath} alt="Logo" className="w-full h-full object-contain drop-shadow-lg" />
+                <img src={getUploadUrl(orgData.logoPath)} alt="Logo" className="w-full h-full object-contain drop-shadow-lg" />
               ) : (
                 <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-4xl">S</span>
