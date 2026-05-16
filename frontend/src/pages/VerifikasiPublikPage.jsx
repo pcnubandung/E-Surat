@@ -75,7 +75,7 @@ export default function VerifikasiPublikPage() {
                   <img
                     src={getUploadUrl(data.data.organisasi.logoPath)}
                     alt="Logo"
-                    className="w-12 h-12 object-contain flex-shrink-0"
+                    className="w-12 h-12 object-contain flex-shrink-0 mt-1"
                   />
                 ) : (
                   <BuildingOfficeIcon className="w-5 h-5 text-primary-600 flex-shrink-0 mt-1" />
@@ -83,11 +83,11 @@ export default function VerifikasiPublikPage() {
                 <div>
                   <p className="text-xs text-gray-500 mb-0.5">Diterbitkan oleh</p>
                   {data.data.organisasi?.tingkatan && (
-                    <p className="font-semibold text-primary-600">{data.data.organisasi.tingkatan}</p>
+                    <p className="font-semibold text-primary-500">{data.data.organisasi.tingkatan}</p>
                   )}
                   <p className="font-semibold text-primary-800">{data.data.organisasi?.nama}</p>
                   {data.data.organisasi?.daerah && (
-                    <p className="font-semibold text-primary-600">{data.data.organisasi.daerah}</p>
+                    <p className="font-semibold text-primary-500">{data.data.organisasi.daerah}</p>
                   )}
                   {data.data.organisasi?.alamat && (
                     <p className="text-xs text-gray-500 mt-0.5">{data.data.organisasi.alamat}</p>
