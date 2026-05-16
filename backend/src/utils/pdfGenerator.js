@@ -11,10 +11,10 @@ const FONT_ARAB_B = path.join(FONTS_DIR, 'TraditionalArabicBold.ttf');
 const HAS_ARAB    = fs2.existsSync(FONT_ARAB_R);
 
 // ── FONT NAMES ────────────────────────────────────────────────────────────────
-const F_REG       = 'Helvetica';
-const F_BOLD      = 'Helvetica-Bold';
-const F_ITAL      = 'Helvetica-Oblique';
-const F_BOLD_ITAL = 'Helvetica-BoldOblique';
+const F_REG       = 'Times-Roman';
+const F_BOLD      = 'Times-Bold';
+const F_ITAL      = 'Times-Italic';
+const F_BOLD_ITAL = 'Times-BoldItalic';
 const F_ARAB      = 'ArabFont';
 const F_ARAB_BOLD = 'ArabFontBold';
 
