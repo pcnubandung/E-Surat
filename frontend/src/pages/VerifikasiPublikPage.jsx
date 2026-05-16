@@ -158,7 +158,7 @@ export default function VerifikasiPublikPage() {
         )}
 
         <p className="text-center text-primary-200 text-xs mt-4">
-          SAFIRA — Sistem Administrasi Persuratan Digital
+          SAFIRA — Smart Fatayat untuk Informasi Risalah dan Administrasi
         </p>
       </motion.div>
     </div>
