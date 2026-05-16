@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <p className="font-bold text-primary-900 text-sm leading-tight truncate">
             SAFIRA
           </p>
-          <p className="text-xs text-gray-100 truncate">Smart Fatayat untuk Informasi Risalah dan Administrasi</p>
+          <p className="text-xs text-gray-400 truncate">PC Fatayat NU Kota Bandung</p>
         </div>
         {/* Close button mobile */}
         <button
