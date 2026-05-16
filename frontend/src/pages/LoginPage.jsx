@@ -75,8 +75,7 @@ export default function LoginPage() {
               )}
             </motion.div>
             <h1 className="text-2xl font-bold text-white mb-1">SAFIRA</h1>
-            <p className="text-primary-200 text-sm">
-              {orgData?.tingkatanOrg orgData?.namaOrg orgData?.daerahOrg || 'Smart Fatayat untuk Informasi Risalah dan Administrasi'}
+            <p className="text-primary-200 text-sm">Smart Fatayat untuk Informasi Risalah dan Administrasi</p>
             </p>
           </div>
 
