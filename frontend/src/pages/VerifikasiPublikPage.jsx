@@ -5,7 +5,7 @@ import {
   CheckBadgeIcon, XCircleIcon, ShieldCheckIcon,
   DocumentTextIcon, CalendarIcon, UserIcon, BuildingOfficeIcon
 } from '@heroicons/react/24/outline'
-import { verifikasiAPI } from '../services/api'
+import { verifikasiAPI, getUploadUrl } from '../services/api'
 import { formatDate, formatDateTime } from '../utils/helpers'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 
@@ -70,13 +70,27 @@ export default function VerifikasiPublikPage() {
             {/* Content */}
             <div className="p-6 space-y-5">
               {/* Organisasi */}
-              <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-xl">
-                <BuildingOfficeIcon className="w-5 h-5 text-primary-600 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-4 bg-primary-50 rounded-xl">
+                {data.data.organisasi?.logoPath ? (
+                  <img
+                    src={getUploadUrl(data.data.organisasi.logoPath)}
+                    alt="Logo"
+                    className="w-12 h-12 object-contain flex-shrink-0"
+                  />
+                ) : (
+                  <BuildingOfficeIcon className="w-5 h-5 text-primary-600 flex-shrink-0 mt-1" />
+                )}
                 <div>
-                  <p className="text-xs text-gray-500">Diterbitkan oleh</p>
+                  <p className="text-xs text-gray-500 mb-0.5">Diterbitkan oleh</p>
+                  {data.data.organisasi?.tingkatan && (
+                    <p className="text-xs text-gray-500">{data.data.organisasi.tingkatan}</p>
+                  )}
                   <p className="font-semibold text-primary-800">{data.data.organisasi?.nama}</p>
+                  {data.data.organisasi?.daerah && (
+                    <p className="text-xs text-gray-600">{data.data.organisasi.daerah}</p>
+                  )}
                   {data.data.organisasi?.alamat && (
-                    <p className="text-xs text-gray-500">{data.data.organisasi.alamat}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{data.data.organisasi.alamat}</p>
                   )}
                 </div>
               </div>

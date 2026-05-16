@@ -59,8 +59,11 @@ const verifySurat = async (req, res) => {
           } : null,
         },
         organisasi: {
+          tingkatan: organisasi?.tingkatanOrg || '',
           nama: organisasi?.namaOrg || 'Fatayat NU',
+          daerah: organisasi?.daerahOrg || '',
           alamat: organisasi?.alamat || '',
+          logoPath: organisasi?.logoPath || null,
         },
         dibuatOleh: surat.pembuat.namaLengkap,
         tanggalSelesai: surat.tglTtdKetua || surat.tglTtdSekretaris,

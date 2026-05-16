@@ -55,9 +55,9 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
         <div className="min-w-0">
           <p className="font-bold text-primary-800 text-sm leading-tight truncate">
-            {orgData?.namaOrg || 'SAFIRA'}
+            SAFIRA
           </p>
-          <p className="text-xs text-gray-400 truncate">Sistem Persuratan Digital</p>
+          <p className="text-xs text-gray-400 truncate">Smart Fatayat untuk Informasi Risalah dan Administrasi</p>
         </div>
         {/* Close button mobile */}
         <button
