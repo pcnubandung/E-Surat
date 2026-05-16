@@ -76,14 +76,14 @@ export default function LoginPage() {
             </motion.div>
             <h1 className="text-2xl font-bold text-white mb-1">SAFIRA</h1>
             <p className="text-primary-200 text-sm">
-              {orgData?.namaOrg || 'Sistem Administrasi Persuratan Digital'}
+              {orgData?.tingkatanOrg namaOrg daerahOrg || 'Smart Fatayat untuk Informasi Risalah dan Administrasi'}
             </p>
           </div>
 
           {/* Form */}
           <div className="px-8 py-8">
             <h2 className="text-xl font-bold text-gray-900 mb-1">Masuk ke Sistem</h2>
-            <p className="text-sm text-gray-500 mb-6">Masukkan kredensial Anda untuk melanjutkan</p>
+            <p className="text-sm text-gray-500 mb-6">Masukkan Kredensial Anda untuk Melanjutkan</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -141,7 +141,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-primary-200 text-xs mt-6">
-          SAFIRA © {new Date().getFullYear()} — Sistem Administrasi Persuratan Digital
+          SAFIRA © {new Date().getFullYear()} — Smart Fatayat untuk Informasi Risalah dan Administrasi
         </p>
       </motion.div>
     </div>
