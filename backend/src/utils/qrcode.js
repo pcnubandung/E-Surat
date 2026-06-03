@@ -1,11 +1,10 @@
 const QRCode = require('qrcode');
+const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
 const ensureDir = (dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 };
 
 function getBaseUpload() {
@@ -14,77 +13,84 @@ function getBaseUpload() {
     : path.join(__dirname, '../../uploads');
 }
 
-/**
- * Ambil logo path dari database
- */
-async function getLogoPathFromDB() {
+async function getLogoBuffer() {
   try {
     const prisma = require('../config/prisma');
     const org = await prisma.organisasiProfil.findFirst();
     if (!org?.logoPath) return null;
 
     const BASE = getBaseUpload();
-    // logoPath disimpan sebagai /uploads/logos/xxx.png
     const logoPath = org.logoPath.startsWith('/uploads')
       ? path.join(BASE, org.logoPath.replace('/uploads', ''))
       : path.join(__dirname, '../../', org.logoPath);
 
-    return fs.existsSync(logoPath) ? logoPath : null;
+    if (!fs.existsSync(logoPath)) return null;
+    return fs.readFileSync(logoPath);
   } catch (_) {
     return null;
   }
 }
 
 /**
- * Generate QR Code dengan logo di tengah (sebagai Buffer PNG)
+ * Generate QR Code PNG buffer dengan logo di tengah menggunakan sharp
  */
 async function generateQRWithLogo(verifikasiUrl, size = 300) {
-  const { createCanvas, loadImage } = require('canvas');
-
-  const canvas = createCanvas(size, size);
-  await QRCode.toCanvas(canvas, verifikasiUrl, {
+  // 1. Generate QR sebagai PNG buffer
+  const qrBuffer = await QRCode.toBuffer(verifikasiUrl, {
+    type: 'png',
     color: { dark: '#166534', light: '#FFFFFF' },
     width: size,
     margin: 2,
     errorCorrectionLevel: 'H',
   });
 
-  const ctx = canvas.getContext('2d');
-  const logoPath = await getLogoPathFromDB();
+  const logoRaw = await getLogoBuffer();
+  if (!logoRaw) return qrBuffer;
 
-  if (logoPath) {
-    try {
-      const logoImg = await loadImage(logoPath);
-      const logoSize = size * 0.24;
-      const cx = size / 2;
-      const cy = size / 2;
-      const circleR = (logoSize / 2) * 1.3;
+  // 2. Ukuran logo = 18% dari QR (diperkecil agar tidak menumpang border)
+  const logoSize = Math.round(size * 0.18);
 
-      // Border hijau
-      ctx.beginPath();
-      ctx.arc(cx, cy, circleR + 3, 0, Math.PI * 2);
-      ctx.fillStyle = '#166534';
-      ctx.fill();
+  // 3. Resize logo
+  const logoResized = await sharp(logoRaw)
+    .resize(logoSize, logoSize, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+    .png()
+    .toBuffer();
 
-      // Lingkaran putih
-      ctx.beginPath();
-      ctx.arc(cx, cy, circleR, 0, Math.PI * 2);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
+  // 4. Lingkaran putih background — 1.6x ukuran logo agar ada ruang di sekitar logo
+  const circleSize = Math.round(logoSize * 1.6);
+  const r = Math.round(circleSize / 2);
 
-      // Logo di dalam lingkaran (clip)
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, circleR - 2, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(logoImg, cx - logoSize / 2, cy - logoSize / 2, logoSize, logoSize);
-      ctx.restore();
-    } catch (e) {
-      console.error('QR logo error:', e.message);
-    }
-  }
+  // SVG lingkaran sebagai mask
+  const circleSvg = Buffer.from(
+    `<svg width="${circleSize}" height="${circleSize}">
+      <circle cx="${r}" cy="${r}" r="${r - 2}" fill="white" stroke="#166534" stroke-width="3"/>
+    </svg>`
+  );
 
-  return canvas.toBuffer('image/png');
+  // 5. Composite: lingkaran putih + logo di atasnya
+  const logoWithCircle = await sharp(circleSvg)
+    .composite([{
+      input: logoResized,
+      gravity: 'center',
+    }])
+    .png()
+    .toBuffer();
+
+  // 6. Hitung posisi tengah QR
+  const offsetX = Math.round((size - circleSize) / 2);
+  const offsetY = Math.round((size - circleSize) / 2);
+
+  // 7. Overlay logo+lingkaran ke atas QR
+  const result = await sharp(qrBuffer)
+    .composite([{
+      input: logoWithCircle,
+      left: offsetX,
+      top: offsetY,
+    }])
+    .png()
+    .toBuffer();
+
+  return result;
 }
 
 /**
@@ -106,7 +112,7 @@ async function generateQRCode(token, suratId) {
     console.error('generateQRCode error:', e.message);
     await QRCode.toFile(filepath, verifikasiUrl, {
       color: { dark: '#166534', light: '#FFFFFF' },
-      width: 300, margin: 2, errorCorrectionLevel: 'H'
+      width: 300, margin: 2, errorCorrectionLevel: 'H',
     });
   }
 
@@ -127,7 +133,7 @@ async function generateQRCodeDataURL(token) {
     console.error('generateQRCodeDataURL error:', e.message);
     return await QRCode.toDataURL(verifikasiUrl, {
       color: { dark: '#166534', light: '#FFFFFF' },
-      width: 300, margin: 1, errorCorrectionLevel: 'H'
+      width: 300, margin: 1, errorCorrectionLevel: 'H',
     });
   }
 }
