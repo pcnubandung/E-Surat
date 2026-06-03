@@ -8,19 +8,31 @@ const ensureDir = (dir) => {
   }
 };
 
-/**
- * Dapatkan logo path dari organisasi
- */
-function getLogoPath() {
-  const BASE_UPLOAD = process.env.UPLOAD_DIR
+function getBaseUpload() {
+  return process.env.UPLOAD_DIR
     ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
     : path.join(__dirname, '../../uploads');
+}
 
-  // Cari logo di folder logos
-  const logosDir = path.join(BASE_UPLOAD, 'logos');
-  if (!fs.existsSync(logosDir)) return null;
-  const files = fs.readdirSync(logosDir).filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f));
-  return files.length > 0 ? path.join(logosDir, files[files.length - 1]) : null;
+/**
+ * Ambil logo path dari database
+ */
+async function getLogoPathFromDB() {
+  try {
+    const prisma = require('../config/prisma');
+    const org = await prisma.organisasiProfil.findFirst();
+    if (!org?.logoPath) return null;
+
+    const BASE = getBaseUpload();
+    // logoPath disimpan sebagai /uploads/logos/xxx.png
+    const logoPath = org.logoPath.startsWith('/uploads')
+      ? path.join(BASE, org.logoPath.replace('/uploads', ''))
+      : path.join(__dirname, '../../', org.logoPath);
+
+    return fs.existsSync(logoPath) ? logoPath : null;
+  } catch (_) {
+    return null;
+  }
 }
 
 /**
@@ -29,50 +41,46 @@ function getLogoPath() {
 async function generateQRWithLogo(verifikasiUrl, size = 300) {
   const { createCanvas, loadImage } = require('canvas');
 
-  // Generate QR ke canvas
   const canvas = createCanvas(size, size);
   await QRCode.toCanvas(canvas, verifikasiUrl, {
     color: { dark: '#166534', light: '#FFFFFF' },
     width: size,
     margin: 2,
-    errorCorrectionLevel: 'H', // Level H agar logo tidak merusak scan
+    errorCorrectionLevel: 'H',
   });
 
   const ctx = canvas.getContext('2d');
+  const logoPath = await getLogoPathFromDB();
 
-  // Tambah logo di tengah jika ada
-  const logoPath = getLogoPath();
-  if (logoPath && fs.existsSync(logoPath)) {
+  if (logoPath) {
     try {
       const logoImg = await loadImage(logoPath);
-      const logoSize = size * 0.22; // 22% dari ukuran QR
-      const logoX = (size - logoSize) / 2;
-      const logoY = (size - logoSize) / 2;
-
-      // Lingkaran putih sebagai background logo
-      const circleR = logoSize * 0.62;
+      const logoSize = size * 0.24;
       const cx = size / 2;
       const cy = size / 2;
+      const circleR = (logoSize / 2) * 1.3;
 
+      // Border hijau
       ctx.beginPath();
-      ctx.arc(cx, cy, circleR + 2, 0, Math.PI * 2);
+      ctx.arc(cx, cy, circleR + 3, 0, Math.PI * 2);
       ctx.fillStyle = '#166534';
       ctx.fill();
 
+      // Lingkaran putih
       ctx.beginPath();
       ctx.arc(cx, cy, circleR, 0, Math.PI * 2);
       ctx.fillStyle = '#FFFFFF';
       ctx.fill();
 
-      // Clip logo jadi lingkaran
+      // Logo di dalam lingkaran (clip)
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, circleR - 2, 0, Math.PI * 2);
       ctx.clip();
-      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+      ctx.drawImage(logoImg, cx - logoSize / 2, cy - logoSize / 2, logoSize, logoSize);
       ctx.restore();
-    } catch (_) {
-      // Jika logo gagal load, QR tetap tampil tanpa logo
+    } catch (e) {
+      console.error('QR logo error:', e.message);
     }
   }
 
@@ -83,23 +91,19 @@ async function generateQRWithLogo(verifikasiUrl, size = 300) {
  * Generate QR Code untuk surat — simpan ke file
  */
 async function generateQRCode(token, suratId) {
-  const BASE_UPLOAD = process.env.UPLOAD_DIR
-    ? (process.env.UPLOAD_DIR.startsWith('/') ? process.env.UPLOAD_DIR : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
-    : path.join(__dirname, '../../uploads');
-  const qrDir = path.join(BASE_UPLOAD, 'qrcodes');
+  const qrDir = path.join(getBaseUpload(), 'qrcodes');
   ensureDir(qrDir);
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
   const verifikasiUrl = `${frontendUrl}/verifikasi/${token}`;
-
   const filename = `qr-${suratId}.png`;
   const filepath = path.join(qrDir, filename);
 
   try {
     const buffer = await generateQRWithLogo(verifikasiUrl, 300);
     fs.writeFileSync(filepath, buffer);
-  } catch (_) {
-    // Fallback tanpa logo
+  } catch (e) {
+    console.error('generateQRCode error:', e.message);
     await QRCode.toFile(filepath, verifikasiUrl, {
       color: { dark: '#166534', light: '#FFFFFF' },
       width: 300, margin: 2, errorCorrectionLevel: 'H'
@@ -119,8 +123,8 @@ async function generateQRCodeDataURL(token) {
   try {
     const buffer = await generateQRWithLogo(verifikasiUrl, 300);
     return `data:image/png;base64,${buffer.toString('base64')}`;
-  } catch (_) {
-    // Fallback tanpa logo
+  } catch (e) {
+    console.error('generateQRCodeDataURL error:', e.message);
     return await QRCode.toDataURL(verifikasiUrl, {
       color: { dark: '#166534', light: '#FFFFFF' },
       width: 300, margin: 1, errorCorrectionLevel: 'H'
