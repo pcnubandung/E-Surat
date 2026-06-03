@@ -988,9 +988,18 @@ async function drawTandaTangan(doc, surat, startY, qrDataUrl) {
   if (qrDataUrl) {
     const qrXLeft  = ML + (colW - qrSz) / 2;
     const qrXRight = ML + colW + (colW - qrSz) / 2;
+    const verifikasiUrl = surat.qrCodeToken
+      ? `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verifikasi/${surat.qrCodeToken}`
+      : null;
     try {
-      if (leftPerson)  doc.image(qrDataUrl, qrXLeft,  y, { width: qrSz, height: qrSz });
-      if (rightPerson) doc.image(qrDataUrl, qrXRight, y, { width: qrSz, height: qrSz });
+      if (leftPerson) {
+        doc.image(qrDataUrl, qrXLeft, y, { width: qrSz, height: qrSz });
+        if (verifikasiUrl) doc.link(qrXLeft, y, qrSz, qrSz, verifikasiUrl);
+      }
+      if (rightPerson) {
+        doc.image(qrDataUrl, qrXRight, y, { width: qrSz, height: qrSz });
+        if (verifikasiUrl) doc.link(qrXRight, y, qrSz, qrSz, verifikasiUrl);
+      }
     } catch (_) {}
     y += qrSz + 4;
   } else {
@@ -1036,7 +1045,13 @@ async function drawFooter(doc, surat, qrDataUrl, pageNum, totalPages) {
 
   // QR kiri bawah
   if (qrDataUrl) {
-    try { doc.image(qrDataUrl, ML, footerY, { width: qrSz, height: qrSz }); } catch (_) {}
+    const verifikasiUrl = surat.qrCodeToken
+      ? `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verifikasi/${surat.qrCodeToken}`
+      : null;
+    try {
+      doc.image(qrDataUrl, ML, footerY, { width: qrSz, height: qrSz });
+      if (verifikasiUrl) doc.link(ML, footerY, qrSz, qrSz, verifikasiUrl);
+    } catch (_) {}
   }
 
   // Teks verifikasi di samping QR
